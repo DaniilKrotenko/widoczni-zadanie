@@ -1,0 +1,65 @@
+CREATE TABLE pracownicy (
+    pracownik_id INT AUTO_INCREMENT PRIMARY KEY,
+    imie VARCHAR(255),
+    nazwisko VARCHAR(255),
+    stanowisko VARCHAR(255),
+    telefon VARCHAR(15),
+    email VARCHAR(255)
+);
+-- Wypełnienie tabeli pracownicy danymi
+INSERT INTO pracownicy (imie, nazwisko, stanowisko, telefon, email) VALUES
+('Jan', 'Kowalski', 'Opiekun 1', '123-456-789', 'jan@opiekun.com'),
+('Anna', 'Nowak', 'Opiekun 2', '987-654-321', 'anna@opiekun.com');
+
+CREATE TABLE pakiety (
+    pakiet_id INT AUTO_INCREMENT PRIMARY KEY,
+    nazwa_pakietu VARCHAR(255),
+    cena DECIMAL(10, 2)
+);
+-- Wypełnienie tabeli pakiety danymi
+INSERT INTO pakiety (nazwa_pakietu, cena) VALUES
+('Pakiet 1', 99.99),
+('Pakiet 2', 149.99);
+
+CREATE TABLE klienci (
+    klient_id INT AUTO_INCREMENT PRIMARY KEY,
+    nazwa_firmy VARCHAR(255),
+    opiekun_id INT, -- Pole wskazujące na opiekuna
+    id_pakietu INT, -- Pole wskazujące na pakiet
+    FOREIGN KEY (opiekun_id) REFERENCES pracownicy (pracownik_id), -- Relacja z tabelą pracowników
+    FOREIGN KEY (id_pakietu) REFERENCES pakiety (pakiet_id) -- Relacja z tabelą pakietów
+);
+-- Wypełnienie tabeli klienci danymi, włączając informacje o pakietach
+INSERT INTO klienci (nazwa_firmy, opiekun_id, id_pakietu) VALUES
+('Firma A', 1, 1),
+('Firma B', 2, 2);
+
+
+CREATE TABLE osoby_kontaktowe (
+    osoba_id INT AUTO_INCREMENT PRIMARY KEY,
+    klient_id INT,
+    imie VARCHAR(255),
+    nazwisko VARCHAR(255),
+    telefon VARCHAR(15),
+    email VARCHAR(255),
+    FOREIGN KEY (klient_id) REFERENCES klienci (klient_id) -- Relacja z tabelą klienci
+);
+-- Wypełnienie tabeli osoby_kontaktowe danymi
+INSERT INTO osoby_kontaktowe (klient_id, imie, nazwisko, telefon, email) VALUES
+(1, 'Imie1', 'Nazwisko1', '111-222-333', 'imie1@klient.com'),
+(2, 'Imie2', 'Nazwisko2', '444-555-666', 'imie2@klient.com');
+
+
+CREATE TABLE klienci_opiekunowie (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    klient_id INT,
+    opiekun_id INT,
+    FOREIGN KEY (klient_id) REFERENCES klienci(klient_id),
+    FOREIGN KEY (opiekun_id) REFERENCES pracownicy(pracownik_id)
+);
+
+INSERT INTO klienci_opiekunowie (klient_id, opiekun_id)
+VALUES
+    (1, 1),
+    (1, 2),
+    (2, 2);

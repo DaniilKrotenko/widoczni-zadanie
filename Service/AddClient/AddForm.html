@@ -1,0 +1,100 @@
+<div id="errorModal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Błąd</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="error-message">Wystąpił błąd.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Zamknij</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <h2>Dodaj klienta</h2>
+            <form method="POST" onsubmit="return validateForm();">
+                <div class="form-group">
+                    <label for="nazwa_firmy">Nazwa firmy:</label>
+                    <input type="text" name="nazwa_firmy" class="form-control" value="<?php echo $nazwa_firmy; ?>"
+                           required>
+                </div>
+                <div class="form-group">
+                    <label for="imie konatktowe klienta">Imie osoby kontaktowej:</label>
+                    <input type="text" name="imie" class="form-control" value="<?php echo $imie; ?>" required>
+                </div>
+                <div class="form-group">
+                    <label for="nazwisko konatktowe klienta">Nazwisko osoby kontaktowej:</label>
+                    <input type="text" name="nazwisko" class="form-control" value="<?php echo $nazwisko; ?>" required>
+                </div>
+                <div class="form-group">
+                    <label for="email konatktowe klienta">Email osoby kontaktowej:</label>
+                    <input type="email" name="email" class="form-control" value="<?php echo $email; ?>" required>
+                </div>
+                <div class="form-group">
+                    <label for="telefon konatktowe klienta">Telefon osoby kontaktowej:</label>
+                    <input type="tel" name="telefon" class="form-control" value="<?php echo $telefon; ?>" required>
+                </div>
+                <div class="form-group">
+                    <label for="pakiet_id">Wybierz Pakiet:</label>
+                    <select name="pakiet_id" class="form-select" required>
+                        <option value="" selected>Wybierz Pakiet</option>
+                        <?php
+                        $pakietQuery = "SELECT pakiet_id, nazwa_pakietu FROM pakiety";
+                        $pakietResult = mysqli_query($conn, $pakietQuery);
+
+                        while ($pakietRow = mysqli_fetch_assoc($pakietResult)) {
+                            echo '<option value="' . $pakietRow['pakiet_id'] . '">' . $pakietRow['nazwa_pakietu'] . '</option>';
+                        }
+                        ?>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="opiekunowie">Wybierz opiekunów:</label>
+                    <div class="opiekun-checkbox-group"
+                         style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc; padding: 5px;">
+                        <?php
+                        $opiekunQuery = "SELECT pracownik_id, CONCAT(imie, ' ', nazwisko) AS pracownik FROM pracownicy";
+                        $opiekunResult = mysqli_query($conn, $opiekunQuery);
+
+                        while ($opiekunRow = mysqli_fetch_assoc($opiekunResult)) {
+                            echo '<div class="form-check">';
+                            echo '<input type="checkbox" name="opiekunowie[]" class="form-check-input" value="' . $opiekunRow['pracownik_id'] . '">';
+                            echo '<label class="form-check-label">' . $opiekunRow['pracownik'] . '</label>';
+                            echo '</div>';
+                        }
+                        ?>
+                </div>
+                <br>
+                    <button type="submit" class="btn btn-primary">Dodaj klienta</button>
+            </form>
+            <br>
+            <br>
+            <a href="../../index.php">Powrót</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    function validateForm() {
+        var checkboxes = document.querySelectorAll('input[name="opiekunowie[]"]');
+        var checked = Array.prototype.slice.call(checkboxes).some(function (checkbox) {
+            return checkbox.checked;
+        });
+
+        if (!checked) {
+            Swal.fire({
+                icon: "error",
+                title: "Błąd",
+                text: "Przynajmniej jeden opiekun jest wymagany."
+            });
+            return false;
+        }
+        return true;
+    }
+</script>
